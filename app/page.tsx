@@ -25,7 +25,6 @@ import { useState, useEffect, useRef, useMemo } from "react"
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false)
   const [activeTab, setActiveTab] = useState("about")
-  const [email, setEmail] = useState("")
   const [submitted, setSubmitted] = useState(false)
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -34,6 +33,12 @@ export default function Home() {
     seconds: 0,
   })
   const [prevSeconds, setPrevSeconds] = useState(0)
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    organization: "",
+    about: ""
+  });
 
   const aboutRef = useRef<HTMLDivElement>(null)
 
@@ -86,13 +91,20 @@ export default function Home() {
     setIsLoaded(true)
   }, [])
 
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Simulate third-party email integration
-    console.log("Submitting to third-party email service:", email)
-    setSubmitted(true)
-    setTimeout(() => setSubmitted(false), 3000)
-  }
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitted(true);
+    try {
+      await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+    } catch (err) {
+      // Optionally handle error
+    }
+    setTimeout(() => setSubmitted(false), 3000);
+  };
 
   const scrollToAbout = () => {
     if (aboutRef.current) {
@@ -647,6 +659,8 @@ export default function Home() {
                               required
                               className="font-mono bg-black/50 border border-gray-800 focus:border-violet"
                               placeholder="Your name"
+                              value={form.name}
+                              onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                             />
                           </div>
 
@@ -657,8 +671,8 @@ export default function Home() {
                               required
                               className="font-mono bg-black/50 border border-gray-800 focus:border-violet"
                               placeholder="your@email.com"
-                              value={email}
-                              onChange={(e) => setEmail(e.target.value)}
+                              value={form.email}
+                              onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                             />
                             <p className="text-xs text-muted-foreground">
                               We'll send confirmation details to this email
@@ -672,6 +686,8 @@ export default function Home() {
                               required
                               className="font-mono bg-black/50 border border-gray-800 focus:border-violet"
                               placeholder="Where you work or study"
+                              value={form.organization}
+                              onChange={e => setForm(f => ({ ...f, organization: e.target.value }))}
                             />
                           </div>
 
@@ -681,6 +697,8 @@ export default function Home() {
                               className="bg-black/50 border border-gray-800 focus:border-violet"
                               placeholder="Your experience, skills, and what you hope to learn"
                               rows={4}
+                              value={form.about}
+                              onChange={e => setForm(f => ({ ...f, about: e.target.value }))}
                             />
                           </div>
 
