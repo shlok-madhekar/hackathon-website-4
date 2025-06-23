@@ -8,7 +8,7 @@ const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
   email: z.string().email({ message: "Please enter a valid email address" }),
   organization: z.string().min(2, { message: "Organization must be at least 2 characters" }),
-  about: z.string().min(10, { message: "Tell us more about yourself" }),
+  about: z.string().min(3, { message: "Tell us more about yourself" }),
 });
 
 const rateLimits = new Map<string, { count: number; timestamp: number }>();

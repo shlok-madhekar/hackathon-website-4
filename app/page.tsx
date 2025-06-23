@@ -95,13 +95,21 @@ export default function Home() {
     e.preventDefault();
     setSubmitted(true);
     try {
-      await fetch("/api/register", {
+      const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || "Registration failed. Please check your input.");
+        setSubmitted(false);
+        return;
+      }
     } catch (err) {
-      // Optionally handle error
+      alert("An error occurred. Please try again later.");
+      setSubmitted(false);
+      return;
     }
     setTimeout(() => setSubmitted(false), 3000);
   };
